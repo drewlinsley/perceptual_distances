@@ -90,7 +90,7 @@ class Trainer():
         OUTPUT
             computed distances between in0 and in1
         '''
-
+        import pdb;pdb.set_trace()
         return self.net.forward(in0, in1, retPerLayer=retPerLayer)
 
     # ***** TRAINING FUNCTIONS *****
