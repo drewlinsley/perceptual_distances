@@ -70,6 +70,7 @@ class LPIPS(nn.Module):
         self.version = version
         self.scaling_layer = ScalingLayer()
 
+        import pdb;pdb.set_trace()
         if(self.pnet_type in ['vgg','vgg16']):
             net_type = pn.vgg16
             self.chns = [64,128,256,512,512]
@@ -82,6 +83,8 @@ class LPIPS(nn.Module):
         elif(self.pnet_type=='h_vgg'):
             net_type = pn.h_vgg16
             self.chns = [64,128,256,512,512]
+        elif "timm" in self.pnet_type:
+            import pdb;pdb.set_trace()
         else:
             raise NotImplementedError
         self.L = len(self.chns)
