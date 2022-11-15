@@ -12,6 +12,7 @@ from IPython import embed
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--datasets', type=str, nargs='+', default=['train/traditional','train/cnn','train/mix'], help='datasets to train on: [train/traditional],[train/cnn],[train/mix],[val/traditional],[val/cnn],[val/color],[val/deblur],[val/frameinterp],[val/superres]')
+parser.add_argument('--test_datasets', type=str, nargs='+', default=['train/traditional','train/cnn','train/mix'], help='datasets to train on: [train/traditional],[train/cnn],[train/mix],[val/traditional],[val/cnn],[val/color],[val/deblur],[val/frameinterp],[val/superres]')
 parser.add_argument('--model', type=str, default='lpips', help='distance model type [lpips] for linearly calibrated net, [baseline] for off-the-shelf network, [l2] for euclidean distance, [ssim] for Structured Similarity Image Metric')
 parser.add_argument('--net', type=str, default='alex', help='[squeeze], [alex], or [vgg] for network architectures')
 parser.add_argument('--batch_size', type=int, default=50, help='batch size to test image patches in')
@@ -43,8 +44,14 @@ if(not os.path.exists(opt.save_dir)):
 
 # initialize model
 trainer = lpips.Trainer()
-trainer.initialize(model=opt.model, net=opt.net, use_gpu=opt.use_gpu, is_train=True, 
-    pnet_rand=opt.from_scratch, pnet_tune=opt.train_trunk, gpu_ids=opt.gpu_ids)
+trainer.initialize(
+    model=opt.model,
+    net=opt.net,
+    use_gpu=opt.use_gpu,
+    is_train=True, 
+    pnet_rand=opt.from_scratch,
+    pnet_tune=opt.train_trunk,
+    gpu_ids=opt.gpu_ids)
 
 # load data from all training sets
 
@@ -105,3 +112,49 @@ for epoch in range(1, opt.nepoch + opt.nepoch_decay + 1):
 
 # trainer.save_done(True)
 fid.close()
+
+
+# Now test
+
+opt = parser.parse_args()
+if(opt.model in ['l2','ssim']):
+    opt.batch_size = 1
+
+# initialize model
+trainer = lpips.Trainer()
+trainer.initialize(
+    model=opt.model,
+    net=opt.net,
+    colorspace=opt.colorspace, 
+    model_path=opt.model_path,
+    use_gpu=opt.use_gpu,
+    pnet_rand=opt.from_scratch,
+    pnet_tune=opt.train_trunk,
+    version=opt.version,
+    gpu_ids=opt.gpu_ids)
+
+if(opt.model in ['net-lin','net']):
+    print('Testing model [%s]-[%s]'%(opt.model,opt.net))
+elif(opt.model in ['l2','ssim']):
+    print('Testing model [%s]-[%s]'%(opt.model,opt.colorspace))
+
+harmonized = False
+if "h_" in opt.net:
+    harmonized = True
+
+# initialize data loader
+for dataset in opt.test_datasets:
+    data_loader = dl.CreateDataLoader(dataset,dataset_mode=opt.dataset_mode, batch_size=opt.batch_size, nThreads=opt.nThreads, harmonized=harmonized)
+
+    # evaluate model on data
+    if(opt.dataset_mode=='2afc'):
+        (score, results_verbose) = lpips.score_2afc_dataset(data_loader, trainer.forward, name=dataset)
+    elif(opt.dataset_mode=='jnd'):
+        (score, results_verbose) = lpips.score_jnd_dataset(data_loader, trainer.forward, name=dataset)
+
+    # print results
+    print('  Dataset [%s]: %.2f'%(dataset,100.*score))
+
+
+
+

@@ -1,1 +1,3 @@
-CUDA_VISIBLE_DEVICES=2 bash scripts/train_test_metric.sh 1 h_vgg
+TRIAL=0
+NET=timm_vgg16
+CUDA_VISIBLE_DEVICES=2 python ./train_and_test.py --use_gpu --net ${NET} --name ${NET}_${TRIAL}
