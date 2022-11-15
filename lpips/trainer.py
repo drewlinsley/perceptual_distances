@@ -123,6 +123,7 @@ class Trainer():
         self.var_p1 = Variable(self.input_p1,requires_grad=True)
 
     def forward_train(self): # run forward pass
+        import pdb;pdb.set_trace()
         self.d0 = self.forward(self.var_ref, self.var_p0)
         self.d1 = self.forward(self.var_ref, self.var_p1)
         self.acc_r = self.compute_accuracy(self.d0,self.d1,self.input_judge)
