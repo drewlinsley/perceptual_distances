@@ -10,7 +10,6 @@ from . import pretrained_networks as pn
 import torch.nn
 
 import lpips
-from timm.models import list_models
 
 
 def spatial_average(in_tens, keepdim=True):

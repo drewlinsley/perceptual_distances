@@ -10,6 +10,7 @@ import argparse
 from util.visualizer import Visualizer
 from IPython import embed
 import timm
+from timm.models import list_models
 
 
 parser = argparse.ArgumentParser()
