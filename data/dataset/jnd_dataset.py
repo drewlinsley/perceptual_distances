@@ -29,8 +29,11 @@ class JNDDataset(BaseDataset):
 
         # judgement directory
         self.dir_S = os.path.join(self.root, 'same')
-        self.same_paths = make_dataset(self.dir_S,mode='np')
-        self.same_paths = sorted(self.same_paths)
+        if os.path.exists("same.npy"):
+            self.judge_paths = np.load("same.npy")
+        else:
+            self.same_paths = make_dataset(self.dir_S,mode='np')
+            self.same_paths = sorted(self.same_paths)
 
     def __getitem__(self, index):
         p0_path = self.p0_paths[index]
