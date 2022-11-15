@@ -49,7 +49,7 @@ if(not os.path.exists(opt.save_dir)):
 # Move this outside eventually
 exclude_model_filters = ['*in21k', '*in22k', '*dino', '*_22k']
 model_names = list_models(
-    pretrained=args.pretrained,  # only include models w/ pretrained checkpoints if set
+    pretrained=True,  # only include models w/ pretrained checkpoints if set
     exclude_filters=exclude_model_filters
 )
 opt.model = "timm_" + model_names[0]
