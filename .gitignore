@@ -1,0 +1,7 @@
+*.pyc
+*.pth
+checkpoints/*
+*.npy
+*.txt
+*__pycache__*
+dataset
