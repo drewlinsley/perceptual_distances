@@ -85,21 +85,23 @@ class LPIPS(nn.Module):
             net_type = pn.h_vgg16
             self.chns = [64,128,256,512,512]
         elif "timm" in self.pnet_type:
-            import pdb;pdb.set_trace()
             pretrained = False  # Init pretrained via timm
             net_name = self.pnet_type.split("timm_")[1]
             net_type = timm.create_model(net_name, pretrained=True, features_only=True)
             print(f'Feature channels: {net_type.feature_info.channels()}')
-            model_layers = net_type.feature_info.channels()
+            model_layers = np.asarray(net_type.feature_info.channels())
             keep = max(5, len(model_layers))  # Keeping 5 maps, uniformly gathered
             idx = np.arange(0, len(model_layers), len(model_layers) // keep)
-            self.chns = model_layers[idx]
+            self.chns = model_layers[idx].tolist()
             # self.chns = [64,128,256,512,512]
         else:
             raise NotImplementedError
         self.L = len(self.chns)
 
-        self.net = net_type(pretrained=not self.pnet_rand, requires_grad=self.pnet_tune)
+        if "timm" in self.pnet_type:
+            self.net = net_type
+        else:
+            self.net = net_type(pretrained=not self.pnet_rand, requires_grad=self.pnet_tune)
 
         if(lpips):
             self.lin0 = NetLinLayer(self.chns[0], use_dropout=use_dropout)
