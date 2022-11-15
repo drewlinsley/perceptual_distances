@@ -34,6 +34,7 @@ class JNDDataset(BaseDataset):
         else:
             self.same_paths = make_dataset(self.dir_S,mode='np')
             self.same_paths = sorted(self.same_paths)
+            np.save("same.npy", self.judge_paths)
 
     def __getitem__(self, index):
         p0_path = self.p0_paths[index]

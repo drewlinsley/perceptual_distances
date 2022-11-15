@@ -42,6 +42,7 @@ class TwoAFCDataset(BaseDataset):
         else:
             self.judge_paths = make_dataset(self.dir_J,mode='np')
             self.judge_paths = sorted(self.judge_paths)
+            np.save("tafc.npy", self.judge_paths)
 
     def __getitem__(self, index):
         p0_path = self.p0_paths[index]
