@@ -89,10 +89,10 @@ class LPIPS(nn.Module):
             pretrained = False  # Init pretrained via timm
             net_name = self.pnet_type.split("timm_")[1]
             net_type = timm.create_model(net_name, pretrained=True, features_only=True)
-            keep = 5  # Keeping 5 maps, uniformly gathered from end to front
             print(f'Feature channels: {net_type.feature_info.channels()}')
             model_layers = net_type.feature_info.channels()
-            idx = np.arange(len(model_layers), 0, keep)
+            keep = max(5, len(model_layers))  # Keeping 5 maps, uniformly gathered
+            idx = np.arange(0, len(model_layers), len(model_layers) // keep)
             self.chns = model_layers[idx]
             # self.chns = [64,128,256,512,512]
         else:
