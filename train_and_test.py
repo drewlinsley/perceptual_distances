@@ -52,7 +52,7 @@ model_names = list_models(
     pretrained=True,  # only include models w/ pretrained checkpoints if set
     exclude_filters=exclude_model_filters
 )
-opt.model = "timm_" + model_names[0]
+opt.net = "timm_" + model_names[0]
 
 # initialize model
 trainer = lpips.Trainer()
