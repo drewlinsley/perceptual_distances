@@ -10,6 +10,7 @@ from . import pretrained_networks as pn
 import torch.nn
 
 import lpips
+import timm
 
 
 def spatial_average(in_tens, keepdim=True):
@@ -71,7 +72,6 @@ class LPIPS(nn.Module):
         self.version = version
         self.scaling_layer = ScalingLayer()
 
-        import pdb;pdb.set_trace()
         if(self.pnet_type in ['vgg','vgg16']):
             net_type = pn.vgg16
             self.chns = [64,128,256,512,512]
