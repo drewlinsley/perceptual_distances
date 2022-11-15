@@ -85,6 +85,15 @@ class LPIPS(nn.Module):
             self.chns = [64,128,256,512,512]
         elif "timm" in self.pnet_type:
             import pdb;pdb.set_trace()
+            pretrained = False  # Init pretrained via timm
+            net_name = self.pnet_type.split("timm_")[1]
+            net_type = timm.create_model(net_name, pretrained=True, features_only=True)
+            keep = 5  # Keeping 5 maps, uniformly gathered from end to front
+            print(f'Feature channels: {net_type.feature_info.channels()}')
+            model_layers = np.asarray([x[1] for x in net_type.feature_info.channels()])
+            idx = np.arange(len(model_layers), 0, keep)
+            self.chns = model_layers[idx]
+            # self.chns = [64,128,256,512,512]
         else:
             raise NotImplementedError
         self.L = len(self.chns)

@@ -9,6 +9,8 @@ from data import data_loader as dl
 import argparse
 from util.visualizer import Visualizer
 from IPython import embed
+import timm
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--datasets', type=str, nargs='+', default=['train/traditional','train/cnn','train/mix'], help='datasets to train on: [train/traditional],[train/cnn],[train/mix],[val/traditional],[val/cnn],[val/color],[val/deblur],[val/frameinterp],[val/superres]')
@@ -41,6 +43,15 @@ opt = parser.parse_args()
 opt.save_dir = os.path.join(opt.checkpoints_dir,opt.name)
 if(not os.path.exists(opt.save_dir)):
     os.mkdir(opt.save_dir)
+
+
+# Move this outside eventually
+exclude_model_filters = ['*in21k', '*in22k', '*dino', '*_22k']
+model_names = list_models(
+    pretrained=args.pretrained,  # only include models w/ pretrained checkpoints if set
+    exclude_filters=exclude_model_filters
+)
+opt.model = "timm_" + model_names[0]
 
 # initialize model
 trainer = lpips.Trainer()
